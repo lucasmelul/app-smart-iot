@@ -31,18 +31,14 @@ const server = app.listen(port, () => {
 //  Socket
 const servIo = io.listen(server);
 
+const bot = new TelegramBot(tokenTelegram, {polling: true});
+
+var dataSensor;
+var oldData;
+
 servIo.sockets.on('connection', (socket) => {
-//  Sending DHT11 Data to Browser
-  let oldData = readSensor(socket);
-  setInterval(() => {
-    //  DHT11
-    const data = readSensor(socket);
-    if(data.temp !== oldData.temp || data.humid !== oldData.humid) {
-      console.log("cambió data");
-      //pegarle al bot de telegram
-      oldData = data;
-    }
-  }, 10000);
+  oldData = readSensor(socket);
+  configBot(socket);
 });
 
 function readSensor(socket) {
@@ -50,41 +46,37 @@ function readSensor(socket) {
   const readout = dht.read();
   const temp = (readout.temperature.toFixed(0));
   const humid = (readout.humidity.toFixed(0));
-
-  socket.emit('dht11', {
-    temp, humid,
-  });
-  return {
-    temp,
-    humid
-  }
+  dataSensor = {temp,humid}
+  socket.emit('dht11', dataSensor);
+  return dataSensor;
 }
 
-
-
-// replace the value below with the Telegram token you receive from @BotFather
-
-// Create a bot that uses 'polling' to fetch new updates
-const bot = new TelegramBot(tokenTelegram, {polling: true});
-
-// Matches "/echo [whatever]"
-bot.onText(/\/echo (.+)/, (msg, match) => {
-  // 'msg' is the received Message from Telegram
-  // 'match' is the result of executing the regexp above on the text content
-  // of the message
-
-  const chatId = msg.chat.id;
-  const resp = match[1]; // the captured "whatever"
-
-  // send back the matched "whatever" to the chat
-  bot.sendMessage(chatId, resp);
-});
-
-// Listen for any kind of message. There are different kinds of
-// messages.
-bot.on('message', (msg) => {
-  const chatId = msg.chat.id;
-
-  // send a message to the chat acknowledging receipt of their message
-  bot.sendMessage(chatId, 'Received your message');
-});
+function configBot(socket) {
+	
+	bot.on('message', (msg) => {
+    const chatId = msg.chat.id;
+    const messageText = msg.text.toLowerCase();
+    switch(messageText) {
+      case 'activar': 
+        const intervalId = setInterval(() => {
+          dataSensor = readSensor(socket);
+          if(dataSensor.temp !== oldData.temp || dataSensor.humid !== oldData.humid) {
+            bot.sendMessage(chatId, JSON.stringify(dataSensor));
+            oldData = dataSensor;
+          }
+        }, 10000);
+      break;
+      case 'temperatura':
+        dataSensor = readSensor(socket);
+        bot.sendMessage(chatId, 'La temperatura actual es: ' + dataSensor.temp + '°C');
+      break;
+      case 'humedad':
+        dataSensor = readSensor(socket);
+        bot.sendMessage(chatId, 'La humedad actual es: ' + dataSensor.humid + '%');
+      break;
+      case 'desactivar':
+        clearInterval(intervalId);
+      break;
+    }
+	});
+}
