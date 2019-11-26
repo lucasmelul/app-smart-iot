@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>App Control Temperatura y Humedad</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- CSS Start -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/bootstrap-toggle.min.css">
+  <link rel="stylesheet" href="css/all.css">
+  <!-- CSS End -->
+  <!-- JS Start -->
+  <script src="js/jquery.min.js"></script>
+  <script src="js/popper.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/bootstrap-toggle.min.js"></script>
+  <script src="js/client.js"></script>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+    <a class="navbar-brand" href="/">App Control Temperatura y Humedad</a>
+  </nav>
+  <div class="container mt-5">
+      <!-- Sensor -->
+      <div class="col-12 col-sm-6">
+        <div class="row">
+          <div class="col">
+            <canvas id="dht11" width="100%" height="100%"></canvas>
+          </div>
+        </div>
+      </div>
+  </div>
+
+  <script src="js/socket.io.js"></script>
+  <script src="js/Chart.min.js"></script>
+  <script src="js/dht11-chart.js"></script>
+  <script src="js/dht11-socket.js"></script>
+</body>
+
+</html>
