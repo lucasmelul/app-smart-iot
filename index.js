@@ -59,7 +59,8 @@ function configBot(socket) {
     dataSensor = readSensor(socket);
     switch(messageText) {
       case 'activar': 
-        bot.sendMessage(chatId, parseText(dataSensor.temp, 'temp') + '/n' + parseText(dataSensor.humid, 'humid'));
+        bot.sendMessage(chatId, parseText(dataSensor.temp, 'temp'));
+        bot.sendMessage(chatId, parseText(dataSensor.humid, 'humid'));
         const intervalId = setInterval(() => {
           if(dataSensor.temp !== oldData.temp){
             bot.sendMessage(chatId, 'La temperatura cambió de ' + oldData.temp + '°C a ' + dataSensor.temp + '°C');
