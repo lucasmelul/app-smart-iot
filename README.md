@@ -1,11 +1,3 @@
-<p align=center>
-<img src="https://i.imgur.com/KuExNfQ.png">
-</p>
-
-
-<a target="_blank" href="http://nodejs.org/download/" title="Node version"><img src="https://img.shields.io/badge/node.js-%3E=_6.0-green.svg"></a>
-<a target="_blank" href="https://opensource.org/licenses/MIT" title="License: MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg"></a>
-
 
 ## App de Temperatura y Humedad
 
@@ -26,7 +18,11 @@ El proyecto correrá en el puerto 3000
 $ sudo node index.js
 
 ```
-<img width="600" src="https://i.imgur.com/sJTCEnZ.gif">
+
+## Autor
+
+Lucas Melul
+
 
 ## License
 
