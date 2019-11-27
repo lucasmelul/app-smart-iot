@@ -37,8 +37,11 @@ var dataSensor;
 var oldData;
 
 servIo.sockets.on('connection', (socket) => {
-  oldData = readSensor(socket);
-  configBot(socket);
+  dataSensor = readSensor(socket);
+  setInterval(() => {
+    oldData = dataSensor;
+    dataSensor = readSensor(socket);
+  }, 10000);
 });
 
 function readSensor(socket) {
@@ -51,38 +54,35 @@ function readSensor(socket) {
   return dataSensor;
 }
 
-function configBot(socket) {
 	
-	bot.on('message', (msg) => {
-    const chatId = msg.chat.id;
-    const messageText = msg.text.toLowerCase();
-    dataSensor = readSensor(socket);
-    switch(messageText) {
-      case 'activar': 
-        bot.sendMessage(chatId, parseText(dataSensor.temp, 'temp'));
-        bot.sendMessage(chatId, parseText(dataSensor.humid, 'humid'));
-        const intervalId = setInterval(() => {
-          if(dataSensor.temp !== oldData.temp){
-            bot.sendMessage(chatId, 'La temperatura cambió de ' + oldData.temp + '°C a ' + dataSensor.temp + '°C');
-          }
-          if(dataSensor.humid !== oldData.humid){
-            bot.sendMessage(chatId, 'La humedad cambió de ' + oldData.humid + '% a ' + dataSensor.humid + '%');
-          }
-        }, 10000);
-      break;
-      case 'temperatura':
-        bot.sendMessage(chatId, parseText(dataSensor.temp, 'temp'));
-      break;
-      case 'humedad':
-        bot.sendMessage(chatId, parseText(dataSensor.humid, 'humid'));
-      break;
-      case 'desactivar':
-        clearInterval(intervalId);
-      break;
-    }
-    oldData = dataSensor;
-	});
-}
+bot.on('message', (msg) => {
+  const chatId = msg.chat.id;
+  const messageText = msg.text.toLowerCase();
+  switch(messageText) {
+    case 'activar': 
+      bot.sendMessage(chatId, parseText(dataSensor.temp, 'temp'));
+      bot.sendMessage(chatId, parseText(dataSensor.humid, 'humid'));
+      const intervalId = setInterval(() => {
+        if(dataSensor.temp !== oldData.temp){
+          bot.sendMessage(chatId, 'La temperatura cambió de ' + oldData.temp + '°C a ' + dataSensor.temp + '°C');
+        }
+        if(dataSensor.humid !== oldData.humid){
+          bot.sendMessage(chatId, 'La humedad cambió de ' + oldData.humid + '% a ' + dataSensor.humid + '%');
+        }
+      }, 15000);
+    break;
+    case 'temperatura':
+      bot.sendMessage(chatId, parseText(dataSensor.temp, 'temp'));
+    break;
+    case 'humedad':
+      bot.sendMessage(chatId, parseText(dataSensor.humid, 'humid'));
+    break;
+    case 'desactivar':
+      clearInterval(intervalId);
+    break;
+  }
+});
+
 
 function parseText(value, type) {
   if(type === 'temp') {
