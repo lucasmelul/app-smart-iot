@@ -50,6 +50,7 @@ function readSensor(socket) {
   const temp = (readout.temperature.toFixed(0));
   const humid = (readout.humidity.toFixed(0));
   dataSensor = {temp,humid}
+  console.log(new Date().toLocaleString(), dataSensor);
   socket.emit('dht11', dataSensor);
   return dataSensor;
 }
